@@ -8,6 +8,7 @@ import FixedPlugin from "../../components/FixedPlugin/FixedPlugin.js";
 import routes from "../../routes.js";
 
 import sidebarImage from "assets/img/sidebar-3.jpg";
+import PrivateRoute from '../../components/PrivateRoute'
 
 function Admin() {
   const [image, setImage] = React.useState(sidebarImage);
@@ -19,9 +20,9 @@ function Admin() {
     return routes.map((prop, key) => {
       if (prop.layout === "/admin") {
         return (
-          <Route
+          <PrivateRoute
             path={prop.layout + prop.path}
-            render={(props) => <prop.component {...props} />}
+            component={prop.component}
             key={key}
           />
         );
