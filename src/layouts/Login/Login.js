@@ -1,75 +1,56 @@
-import React from "react";
-import styled from "styled-components";
-// react-bootstrap components
-import {
-  Badge,
-  Button,
-  Card,
-  Navbar,
-  Nav,
-  Table,
-  Container,
-  Row,
-  Col,
-  Form,
-  OverlayTrigger,
-  Tooltip,
-} from "react-bootstrap";
+import React, { useState } from "react";
+import { Button } from "react-bootstrap";
 
-const AuthWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  text-align: left;
+import { AuthWrapper, AuthInner, BtnGroup, InputStyle } from './style'
+import { login } from '../../middleware/API'
+import { setToken } from '../../middleware/utils'
+import { useHistory } from 'react-router-dom'
 
-  & .form-control:focus {
-    border-color: #167bff;
-    box-shadow: none;
-  }
-
-  & h3 {
-    text-align: center;
-    margin: 0;
-    line-height: 1;
-    padding-bottom: 20px;
-  }
-
-  & hr {
-    background : #9a9a9a66;
-  }
-`
-
-const AuthInner = styled.div`
-  width: 450px;
-  margin: auto;
-  background: #ffffff;
-  box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.2);
-  padding: 40px 55px 45px 55px;
-  border-radius: 15px;
-  transition: all .3s;
-`
 function Login() {
-  return (
 
-    <Container fluid>
+  const [subData, setSubData] = useState({})
+  const history = useHistory()
+  const handleChange = e => {
+    let newState = JSON.parse(JSON.stringify(subData))
+    newState[e.target.name] = e.target.value
+    setSubData(newState)
+  }
+
+  const handleLogin = () => {
+    const {account, password} = subData
+    if(!account || !password) {
+      alert('請輸入帳號或密碼')
+      return
+    }
+    login(account, password).then(data => {
+      if(!data.ok) return alert('fail')
+      const token = data.token
+      setToken(token)
+      history.push('/')
+    })
+  }
+
+  return (
       <AuthWrapper>
         <AuthInner>
           <form>
             <h3>Company Name</h3>
             <hr size="8px" align="center" width="100%"/>
             <div className="form-group">
-                <label>Email address</label>
-                <input type="email" className="form-control" placeholder="Enter email" />
+                <label>帳號</label>
+                <InputStyle type="email" className="form-control" placeholder="Enter email" name="account" onChange={handleChange}/>
             </div>
             <div className="form-group">
-                <label>Password</label>
-                <input type="password" className="form-control" placeholder="Enter password" />
+                <label>密碼</label>
+                <InputStyle type="password" className="form-control" placeholder="Enter password" name="password" onChange={handleChange}/>
             </div>
-            <button type="submit" className="btn btn-primary btn-block">Submit</button>
+            <BtnGroup>
+              <Button variant="primary" onClick={() => console.log(subData)}>登入</Button>
+              <Button variant="success">註冊</Button>
+            </BtnGroup>
           </form>
         </AuthInner>
       </AuthWrapper>
-    </Container>
   );
 }
 
